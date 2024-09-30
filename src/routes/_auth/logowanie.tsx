@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { SignupValidationSchema } from "@/lib/validation";
 import type { z } from "zod";
-import Loader from "@/components/shared/loader";
+import Loader from "@/components/shared/Loader";
 const SignupForm = () => {
 	const isLoading = false;
 
