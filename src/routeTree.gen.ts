@@ -11,59 +11,151 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as IndexImport } from './routes/index'
+import { Route as PagesImport } from './routes/_pages'
+import { Route as AuthImport } from './routes/_auth'
+import { Route as PagesIndexImport } from './routes/_pages/index'
+import { Route as AuthRejestracjaImport } from './routes/_auth/rejestracja'
+import { Route as AuthLogowanieImport } from './routes/_auth/logowanie'
 
 // Create/Update Routes
 
-const IndexRoute = IndexImport.update({
-  path: '/',
+const PagesRoute = PagesImport.update({
+  id: '/_pages',
   getParentRoute: () => rootRoute,
+} as any)
+
+const AuthRoute = AuthImport.update({
+  id: '/_auth',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const PagesIndexRoute = PagesIndexImport.update({
+  path: '/',
+  getParentRoute: () => PagesRoute,
+} as any)
+
+const AuthRejestracjaRoute = AuthRejestracjaImport.update({
+  path: '/rejestracja',
+  getParentRoute: () => AuthRoute,
+} as any)
+
+const AuthLogowanieRoute = AuthLogowanieImport.update({
+  path: '/logowanie',
+  getParentRoute: () => AuthRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
+    '/_auth': {
+      id: '/_auth'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AuthImport
+      parentRoute: typeof rootRoute
+    }
+    '/_pages': {
+      id: '/_pages'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof PagesImport
+      parentRoute: typeof rootRoute
+    }
+    '/_auth/logowanie': {
+      id: '/_auth/logowanie'
+      path: '/logowanie'
+      fullPath: '/logowanie'
+      preLoaderRoute: typeof AuthLogowanieImport
+      parentRoute: typeof AuthImport
+    }
+    '/_auth/rejestracja': {
+      id: '/_auth/rejestracja'
+      path: '/rejestracja'
+      fullPath: '/rejestracja'
+      preLoaderRoute: typeof AuthRejestracjaImport
+      parentRoute: typeof AuthImport
+    }
+    '/_pages/': {
+      id: '/_pages/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof PagesIndexImport
+      parentRoute: typeof PagesImport
     }
   }
 }
 
 // Create and export the route tree
 
+interface AuthRouteChildren {
+  AuthLogowanieRoute: typeof AuthLogowanieRoute
+  AuthRejestracjaRoute: typeof AuthRejestracjaRoute
+}
+
+const AuthRouteChildren: AuthRouteChildren = {
+  AuthLogowanieRoute: AuthLogowanieRoute,
+  AuthRejestracjaRoute: AuthRejestracjaRoute,
+}
+
+const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
+
+interface PagesRouteChildren {
+  PagesIndexRoute: typeof PagesIndexRoute
+}
+
+const PagesRouteChildren: PagesRouteChildren = {
+  PagesIndexRoute: PagesIndexRoute,
+}
+
+const PagesRouteWithChildren = PagesRoute._addFileChildren(PagesRouteChildren)
+
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
+  '': typeof PagesRouteWithChildren
+  '/logowanie': typeof AuthLogowanieRoute
+  '/rejestracja': typeof AuthRejestracjaRoute
+  '/': typeof PagesIndexRoute
 }
 
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
+  '': typeof AuthRouteWithChildren
+  '/logowanie': typeof AuthLogowanieRoute
+  '/rejestracja': typeof AuthRejestracjaRoute
+  '/': typeof PagesIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
-  '/': typeof IndexRoute
+  '/_auth': typeof AuthRouteWithChildren
+  '/_pages': typeof PagesRouteWithChildren
+  '/_auth/logowanie': typeof AuthLogowanieRoute
+  '/_auth/rejestracja': typeof AuthRejestracjaRoute
+  '/_pages/': typeof PagesIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '' | '/logowanie' | '/rejestracja' | '/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '' | '/logowanie' | '/rejestracja' | '/'
+  id:
+    | '__root__'
+    | '/_auth'
+    | '/_pages'
+    | '/_auth/logowanie'
+    | '/_auth/rejestracja'
+    | '/_pages/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
+  AuthRoute: typeof AuthRouteWithChildren
+  PagesRoute: typeof PagesRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
+  AuthRoute: AuthRouteWithChildren,
+  PagesRoute: PagesRouteWithChildren,
 }
 
 export const routeTree = rootRoute
@@ -78,11 +170,34 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/"
+        "/_auth",
+        "/_pages"
       ]
     },
-    "/": {
-      "filePath": "index.tsx"
+    "/_auth": {
+      "filePath": "_auth.tsx",
+      "children": [
+        "/_auth/logowanie",
+        "/_auth/rejestracja"
+      ]
+    },
+    "/_pages": {
+      "filePath": "_pages.tsx",
+      "children": [
+        "/_pages/"
+      ]
+    },
+    "/_auth/logowanie": {
+      "filePath": "_auth/logowanie.tsx",
+      "parent": "/_auth"
+    },
+    "/_auth/rejestracja": {
+      "filePath": "_auth/rejestracja.tsx",
+      "parent": "/_auth"
+    },
+    "/_pages/": {
+      "filePath": "_pages/index.tsx",
+      "parent": "/_pages"
     }
   }
 }
