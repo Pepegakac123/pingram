@@ -1,10 +1,9 @@
 import ReactDOM from "react-dom/client";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
-
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "./globals.css";
-// Import the generated route tree
 import { routeTree } from "./routeTree.gen";
+import { useUserContext } from "./context/AuthContext";
 
 // Create new query client
 const queryClient = new QueryClient();
@@ -14,6 +13,8 @@ const router = createRouter({
 	routeTree,
 	context: {
 		queryClient,
+		// provide the actual userContext later
+		userContext: undefined!,
 	},
 	defaultPreload: "intent",
 });
@@ -25,14 +26,22 @@ declare module "@tanstack/react-router" {
 	}
 }
 
+// Create a wrapper component to use the context
+function App() {
+	const userContext = useUserContext();
+
+	return (
+		<RouterProvider router={router} context={{ queryClient, userContext }} />
+	);
+}
+
 // Render the app
-// biome-ignore lint:
-const rootElement = document.getElementById("root")!;
-if (!rootElement.innerHTML) {
+const rootElement = document.getElementById("root");
+if (rootElement && !rootElement.innerHTML) {
 	const root = ReactDOM.createRoot(rootElement);
 	root.render(
 		<QueryClientProvider client={queryClient}>
-			<RouterProvider router={router} />
+			<App />
 		</QueryClientProvider>,
 	);
 }

@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -11,76 +11,74 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { SignupValidationSchema } from "@/lib/validation";
+import { SignInValidationSchema } from "@/lib/validation";
 import type { z } from "zod";
 import Loader from "@/components/shared/Loader";
-const SignupForm = () => {
-	const isLoading = false;
+import { useToast } from "@/hooks/use-toast";
+import { useSignInAccount } from "@/lib/react-query/queriesAndMutatations";
+const SignInForm = () => {
+	const { toast } = useToast();
+	const { checkAuthUser, isUserLoading } = Route.useLoaderData();
 
-	const form = useForm<z.infer<typeof SignupValidationSchema>>({
-		resolver: zodResolver(SignupValidationSchema),
+	const { mutateAsync: signInAccount, isPending: isSigningIn } =
+		useSignInAccount();
+
+	const navigate = useNavigate();
+
+	const form = useForm<z.infer<typeof SignInValidationSchema>>({
+		resolver: zodResolver(SignInValidationSchema),
 		defaultValues: {
-			name: "",
-			username: "",
 			email: "",
 			password: "",
 		},
 	});
 
 	// 2. Define a submit handler.
-	async function onSubmit(values: z.infer<typeof SignupValidationSchema>) {
-		// creating an user
+	async function onSubmit(values: z.infer<typeof SignInValidationSchema>) {
+		try {
+			const session = await signInAccount({
+				email: values.email,
+				password: values.password,
+			});
+
+			if (!session) {
+				toast({
+					title: "Logowanie nie powiodło się, spróbuj ponownie",
+				});
+				navigate({ to: "/logowanie" });
+
+				return;
+			}
+
+			const isLoggedIn = await checkAuthUser();
+			if (isLoggedIn) {
+				form.reset();
+				navigate({
+					to: "/",
+				});
+			} else {
+				return toast({
+					title: "Logowanie nie powiodło się. Spróbuj ponownie",
+				});
+			}
+		} catch (error) {
+			console.log(error);
+		}
 	}
 
 	return (
 		<Form {...form}>
 			<div className="sm:w-420 flex flex-center flex-col">
 				<img src="/assets/images/logo.svg" alt="logo" />
-				<h2 className="h3-bold md:h2-bold pt-5 sm:pt-12">Utwórz Nowe Konto</h2>
-				<p className="text-light-3 small-medium md:base-regular">
-					Aby skorzystać z pingrama, wprowadź proszę swoje dane
+				<h2 className="h3-bold md:h2-bold pt-5 sm:pt-12">Zaloguj Się</h2>
+				<p className="text-light-3 small-medium md:base-regular text-center">
+					Witamy z powrotem. Wprowadź dane, aby skorzystć z serwisu.
 				</p>
 
 				<form
 					onSubmit={form.handleSubmit(onSubmit)}
 					className="flex flex-col gap-5 w-full mt-4"
 				>
-					<FormField
-						control={form.control}
-						name="name"
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>Imię</FormLabel>
-								<FormControl>
-									<Input
-										type="text"
-										className="shad-input"
-										placeholder="np: Jan"
-										{...field}
-									/>
-								</FormControl>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
-					<FormField
-						control={form.control}
-						name="username"
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>Nazwa Użytkownika</FormLabel>
-								<FormControl>
-									<Input
-										type="text"
-										className="shad-input"
-										placeholder="np: Jan321"
-										{...field}
-									/>
-								</FormControl>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
 					<FormField
 						control={form.control}
 						name="email"
@@ -119,16 +117,16 @@ const SignupForm = () => {
 						)}
 					/>
 					<Button type="submit" className="shad-button_primary">
-						{isLoading ? (
+						{isUserLoading ? (
 							<div className="flex-center gap-2">
 								<Loader /> Przesyłanie...
 							</div>
 						) : (
-							"Utwórz Konto"
+							"Zaloguj Się"
 						)}
 					</Button>
 					<p className="text-small-regular text-light-2 text-center mt-2">
-						Posiadasz juz konto?
+						Nie Posiadasz Konta?
 						{
 							<Link
 								to="/rejestracja"
@@ -145,5 +143,9 @@ const SignupForm = () => {
 };
 
 export const Route = createFileRoute("/_auth/logowanie")({
-	component: SignupForm,
+	component: SignInForm,
+	loader: ({ context }) => {
+		const { checkAuthUser, isLoading: isUserLoading } = context.userContext;
+		return { checkAuthUser, isUserLoading };
+	},
 });

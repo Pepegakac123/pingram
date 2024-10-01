@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -14,8 +14,22 @@ import { Input } from "@/components/ui/input";
 import { SignupValidationSchema } from "@/lib/validation";
 import type { z } from "zod";
 import Loader from "@/components/shared/Loader";
+import { useToast } from "@/hooks/use-toast";
+import {
+	useCreateUserAccount,
+	useSignInAccount,
+} from "@/lib/react-query/queriesAndMutatations";
+import { getCurrentUser } from "@/lib/appwrite/api";
 const SignupForm = () => {
-	const isLoading = false;
+	const { toast } = useToast();
+	const { checkAuthUser, isUserLoading } = Route.useLoaderData();
+	const { mutateAsync: createUserAccount, isPending: isCreatingUser } =
+		useCreateUserAccount();
+
+	const { mutateAsync: signInAccount, isPending: isSigningIn } =
+		useSignInAccount();
+
+	const navigate = useNavigate();
 
 	const form = useForm<z.infer<typeof SignupValidationSchema>>({
 		resolver: zodResolver(SignupValidationSchema),
@@ -28,10 +42,45 @@ const SignupForm = () => {
 	});
 
 	// 2. Define a submit handler.
-	function onSubmit(values: z.infer<typeof SignupValidationSchema>) {
-		// Do something with the form values.
-		// ✅ This will be type-safe and validated.
-		console.log(values);
+	async function onSubmit(values: z.infer<typeof SignupValidationSchema>) {
+		try {
+			const newUser = await createUserAccount(values);
+			if (!newUser) {
+				return toast({
+					title: "Rejestracja nie powiodła się, spróbuj ponownie",
+				});
+			}
+			const session = await signInAccount({
+				email: values.email,
+				password: values.password,
+			});
+
+			if (!session) {
+				toast({
+					title: "Logowanie nie powiodło się, spróbuj ponownie",
+				});
+				navigate({ to: "/logowanie" });
+
+				return;
+			}
+			const user = await getCurrentUser();
+			console.log(user);
+
+			const isLoggedIn = await checkAuthUser();
+			console.log(session, isLoggedIn);
+			if (isLoggedIn) {
+				form.reset();
+				navigate({
+					to: "/",
+				});
+			} else {
+				return toast({
+					title: "Rejestracja się nie powiodła. Spróbuj ponownie",
+				});
+			}
+		} catch (error) {
+			console.log(error);
+		}
 	}
 
 	return (
@@ -39,7 +88,7 @@ const SignupForm = () => {
 			<div className="sm:w-420 flex flex-center flex-col">
 				<img src="/assets/images/logo.svg" alt="logo" />
 				<h2 className="h3-bold md:h2-bold pt-5 sm:pt-12">Utwórz Nowe Konto</h2>
-				<p className="text-light-3 small-medium md:base-regular">
+				<p className="text-light-3 small-medium md:base-regular text-center">
 					Aby skorzystać z pingrama, wprowadź proszę swoje dane
 				</p>
 
@@ -121,7 +170,7 @@ const SignupForm = () => {
 						)}
 					/>
 					<Button type="submit" className="shad-button_primary">
-						{isLoading ? (
+						{isCreatingUser ? (
 							<div className="flex-center gap-2">
 								<Loader /> Przesyłanie...
 							</div>
@@ -148,4 +197,8 @@ const SignupForm = () => {
 
 export const Route = createFileRoute("/_auth/rejestracja")({
 	component: SignupForm,
+	loader: ({ context }) => {
+		const { checkAuthUser, isLoading: isUserLoading } = context.userContext;
+		return { checkAuthUser, isUserLoading };
+	},
 });

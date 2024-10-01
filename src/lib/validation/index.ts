@@ -4,11 +4,15 @@ export const SignupValidationSchema = z.object({
 	name: z
 		.string()
 		.min(2, { message: "Imię musi składać się z minimum 2 znaków." }),
-	username: z
+	username: z.string().min(2, {
+		message: "Nazwa Użytkownika musi składać się z minimum 2 znaków.",
+	}),
+	email: z.string().email({ message: "Niepoprawny adres email." }),
+	password: z
 		.string()
-		.min(2, {
-			message: "Nazwa Użytkownika musi składać się z minimum 2 znaków.",
-		}),
+		.min(8, { message: "Hasło musi składać się z minimum 8 znaków." }),
+});
+export const SignInValidationSchema = z.object({
 	email: z.string().email({ message: "Niepoprawny adres email." }),
 	password: z
 		.string()
