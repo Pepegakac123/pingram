@@ -34,10 +34,13 @@ function App() {
 	const { checkAuthUser } = Route.useLoaderData();
 	// biome-ignore lint/correctness/useExhaustiveDependencies:
 	useEffect(() => {
-		if (localStorage.getItem("cookieFallback") === "[]") {
-			navigate({
-				to: "/logowanie",
-			});
+		const cookieFallback = localStorage.getItem("cookieFallback");
+		if (
+			cookieFallback === "[]" ||
+			cookieFallback === null ||
+			cookieFallback === undefined
+		) {
+			navigate({ to: "/logowanie" });
 		}
 
 		checkAuthUser();
@@ -46,8 +49,8 @@ function App() {
 		<main className="flex h-screen">
 			<Outlet />
 			<Toaster />
-			<ReactQueryDevtools buttonPosition="top-right" />
-			<TanStackRouterDevtools position="bottom-right" />
+			{/* <ReactQueryDevtools buttonPosition="top-right" />
+			<TanStackRouterDevtools position="bottom-right" /> */}
 		</main>
 	);
 }

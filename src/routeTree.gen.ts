@@ -14,8 +14,17 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as PagesImport } from './routes/_pages'
 import { Route as AuthImport } from './routes/_auth'
 import { Route as PagesIndexImport } from './routes/_pages/index'
+import { Route as PagesZapisaneImport } from './routes/_pages/zapisane'
+import { Route as PagesUzytkownicyImport } from './routes/_pages/uzytkownicy'
+import { Route as PagesUtworzPostImport } from './routes/_pages/utworz-post'
+import { Route as PagesOdkrywajImport } from './routes/_pages/odkrywaj'
 import { Route as AuthRejestracjaImport } from './routes/_auth/rejestracja'
 import { Route as AuthLogowanieImport } from './routes/_auth/logowanie'
+import { Route as PagesPostyIndexImport } from './routes/_pages/posty/index'
+import { Route as PagesProfileProfileIdImport } from './routes/_pages/profile/$profileId'
+import { Route as PagesPostyPostidImport } from './routes/_pages/posty/$postid'
+import { Route as PagesEdytujProfilProfilidImport } from './routes/_pages/edytuj-profil/$profilid'
+import { Route as PagesEdytujPostPostidImport } from './routes/_pages/edytuj-post/$postid'
 
 // Create/Update Routes
 
@@ -34,6 +43,26 @@ const PagesIndexRoute = PagesIndexImport.update({
   getParentRoute: () => PagesRoute,
 } as any)
 
+const PagesZapisaneRoute = PagesZapisaneImport.update({
+  path: '/zapisane',
+  getParentRoute: () => PagesRoute,
+} as any)
+
+const PagesUzytkownicyRoute = PagesUzytkownicyImport.update({
+  path: '/uzytkownicy',
+  getParentRoute: () => PagesRoute,
+} as any)
+
+const PagesUtworzPostRoute = PagesUtworzPostImport.update({
+  path: '/utworz-post',
+  getParentRoute: () => PagesRoute,
+} as any)
+
+const PagesOdkrywajRoute = PagesOdkrywajImport.update({
+  path: '/odkrywaj',
+  getParentRoute: () => PagesRoute,
+} as any)
+
 const AuthRejestracjaRoute = AuthRejestracjaImport.update({
   path: '/rejestracja',
   getParentRoute: () => AuthRoute,
@@ -42,6 +71,31 @@ const AuthRejestracjaRoute = AuthRejestracjaImport.update({
 const AuthLogowanieRoute = AuthLogowanieImport.update({
   path: '/logowanie',
   getParentRoute: () => AuthRoute,
+} as any)
+
+const PagesPostyIndexRoute = PagesPostyIndexImport.update({
+  path: '/posty/',
+  getParentRoute: () => PagesRoute,
+} as any)
+
+const PagesProfileProfileIdRoute = PagesProfileProfileIdImport.update({
+  path: '/profile/$profileId',
+  getParentRoute: () => PagesRoute,
+} as any)
+
+const PagesPostyPostidRoute = PagesPostyPostidImport.update({
+  path: '/posty/$postid',
+  getParentRoute: () => PagesRoute,
+} as any)
+
+const PagesEdytujProfilProfilidRoute = PagesEdytujProfilProfilidImport.update({
+  path: '/edytuj-profil/$profilid',
+  getParentRoute: () => PagesRoute,
+} as any)
+
+const PagesEdytujPostPostidRoute = PagesEdytujPostPostidImport.update({
+  path: '/edytuj-post/$postid',
+  getParentRoute: () => PagesRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -76,11 +130,74 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRejestracjaImport
       parentRoute: typeof AuthImport
     }
+    '/_pages/odkrywaj': {
+      id: '/_pages/odkrywaj'
+      path: '/odkrywaj'
+      fullPath: '/odkrywaj'
+      preLoaderRoute: typeof PagesOdkrywajImport
+      parentRoute: typeof PagesImport
+    }
+    '/_pages/utworz-post': {
+      id: '/_pages/utworz-post'
+      path: '/utworz-post'
+      fullPath: '/utworz-post'
+      preLoaderRoute: typeof PagesUtworzPostImport
+      parentRoute: typeof PagesImport
+    }
+    '/_pages/uzytkownicy': {
+      id: '/_pages/uzytkownicy'
+      path: '/uzytkownicy'
+      fullPath: '/uzytkownicy'
+      preLoaderRoute: typeof PagesUzytkownicyImport
+      parentRoute: typeof PagesImport
+    }
+    '/_pages/zapisane': {
+      id: '/_pages/zapisane'
+      path: '/zapisane'
+      fullPath: '/zapisane'
+      preLoaderRoute: typeof PagesZapisaneImport
+      parentRoute: typeof PagesImport
+    }
     '/_pages/': {
       id: '/_pages/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof PagesIndexImport
+      parentRoute: typeof PagesImport
+    }
+    '/_pages/edytuj-post/$postid': {
+      id: '/_pages/edytuj-post/$postid'
+      path: '/edytuj-post/$postid'
+      fullPath: '/edytuj-post/$postid'
+      preLoaderRoute: typeof PagesEdytujPostPostidImport
+      parentRoute: typeof PagesImport
+    }
+    '/_pages/edytuj-profil/$profilid': {
+      id: '/_pages/edytuj-profil/$profilid'
+      path: '/edytuj-profil/$profilid'
+      fullPath: '/edytuj-profil/$profilid'
+      preLoaderRoute: typeof PagesEdytujProfilProfilidImport
+      parentRoute: typeof PagesImport
+    }
+    '/_pages/posty/$postid': {
+      id: '/_pages/posty/$postid'
+      path: '/posty/$postid'
+      fullPath: '/posty/$postid'
+      preLoaderRoute: typeof PagesPostyPostidImport
+      parentRoute: typeof PagesImport
+    }
+    '/_pages/profile/$profileId': {
+      id: '/_pages/profile/$profileId'
+      path: '/profile/$profileId'
+      fullPath: '/profile/$profileId'
+      preLoaderRoute: typeof PagesProfileProfileIdImport
+      parentRoute: typeof PagesImport
+    }
+    '/_pages/posty/': {
+      id: '/_pages/posty/'
+      path: '/posty'
+      fullPath: '/posty'
+      preLoaderRoute: typeof PagesPostyIndexImport
       parentRoute: typeof PagesImport
     }
   }
@@ -101,11 +218,29 @@ const AuthRouteChildren: AuthRouteChildren = {
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
 interface PagesRouteChildren {
+  PagesOdkrywajRoute: typeof PagesOdkrywajRoute
+  PagesUtworzPostRoute: typeof PagesUtworzPostRoute
+  PagesUzytkownicyRoute: typeof PagesUzytkownicyRoute
+  PagesZapisaneRoute: typeof PagesZapisaneRoute
   PagesIndexRoute: typeof PagesIndexRoute
+  PagesEdytujPostPostidRoute: typeof PagesEdytujPostPostidRoute
+  PagesEdytujProfilProfilidRoute: typeof PagesEdytujProfilProfilidRoute
+  PagesPostyPostidRoute: typeof PagesPostyPostidRoute
+  PagesProfileProfileIdRoute: typeof PagesProfileProfileIdRoute
+  PagesPostyIndexRoute: typeof PagesPostyIndexRoute
 }
 
 const PagesRouteChildren: PagesRouteChildren = {
+  PagesOdkrywajRoute: PagesOdkrywajRoute,
+  PagesUtworzPostRoute: PagesUtworzPostRoute,
+  PagesUzytkownicyRoute: PagesUzytkownicyRoute,
+  PagesZapisaneRoute: PagesZapisaneRoute,
   PagesIndexRoute: PagesIndexRoute,
+  PagesEdytujPostPostidRoute: PagesEdytujPostPostidRoute,
+  PagesEdytujProfilProfilidRoute: PagesEdytujProfilProfilidRoute,
+  PagesPostyPostidRoute: PagesPostyPostidRoute,
+  PagesProfileProfileIdRoute: PagesProfileProfileIdRoute,
+  PagesPostyIndexRoute: PagesPostyIndexRoute,
 }
 
 const PagesRouteWithChildren = PagesRoute._addFileChildren(PagesRouteChildren)
@@ -114,14 +249,32 @@ export interface FileRoutesByFullPath {
   '': typeof PagesRouteWithChildren
   '/logowanie': typeof AuthLogowanieRoute
   '/rejestracja': typeof AuthRejestracjaRoute
+  '/odkrywaj': typeof PagesOdkrywajRoute
+  '/utworz-post': typeof PagesUtworzPostRoute
+  '/uzytkownicy': typeof PagesUzytkownicyRoute
+  '/zapisane': typeof PagesZapisaneRoute
   '/': typeof PagesIndexRoute
+  '/edytuj-post/$postid': typeof PagesEdytujPostPostidRoute
+  '/edytuj-profil/$profilid': typeof PagesEdytujProfilProfilidRoute
+  '/posty/$postid': typeof PagesPostyPostidRoute
+  '/profile/$profileId': typeof PagesProfileProfileIdRoute
+  '/posty': typeof PagesPostyIndexRoute
 }
 
 export interface FileRoutesByTo {
   '': typeof AuthRouteWithChildren
   '/logowanie': typeof AuthLogowanieRoute
   '/rejestracja': typeof AuthRejestracjaRoute
+  '/odkrywaj': typeof PagesOdkrywajRoute
+  '/utworz-post': typeof PagesUtworzPostRoute
+  '/uzytkownicy': typeof PagesUzytkownicyRoute
+  '/zapisane': typeof PagesZapisaneRoute
   '/': typeof PagesIndexRoute
+  '/edytuj-post/$postid': typeof PagesEdytujPostPostidRoute
+  '/edytuj-profil/$profilid': typeof PagesEdytujProfilProfilidRoute
+  '/posty/$postid': typeof PagesPostyPostidRoute
+  '/profile/$profileId': typeof PagesProfileProfileIdRoute
+  '/posty': typeof PagesPostyIndexRoute
 }
 
 export interface FileRoutesById {
@@ -130,21 +283,65 @@ export interface FileRoutesById {
   '/_pages': typeof PagesRouteWithChildren
   '/_auth/logowanie': typeof AuthLogowanieRoute
   '/_auth/rejestracja': typeof AuthRejestracjaRoute
+  '/_pages/odkrywaj': typeof PagesOdkrywajRoute
+  '/_pages/utworz-post': typeof PagesUtworzPostRoute
+  '/_pages/uzytkownicy': typeof PagesUzytkownicyRoute
+  '/_pages/zapisane': typeof PagesZapisaneRoute
   '/_pages/': typeof PagesIndexRoute
+  '/_pages/edytuj-post/$postid': typeof PagesEdytujPostPostidRoute
+  '/_pages/edytuj-profil/$profilid': typeof PagesEdytujProfilProfilidRoute
+  '/_pages/posty/$postid': typeof PagesPostyPostidRoute
+  '/_pages/profile/$profileId': typeof PagesProfileProfileIdRoute
+  '/_pages/posty/': typeof PagesPostyIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '' | '/logowanie' | '/rejestracja' | '/'
+  fullPaths:
+    | ''
+    | '/logowanie'
+    | '/rejestracja'
+    | '/odkrywaj'
+    | '/utworz-post'
+    | '/uzytkownicy'
+    | '/zapisane'
+    | '/'
+    | '/edytuj-post/$postid'
+    | '/edytuj-profil/$profilid'
+    | '/posty/$postid'
+    | '/profile/$profileId'
+    | '/posty'
   fileRoutesByTo: FileRoutesByTo
-  to: '' | '/logowanie' | '/rejestracja' | '/'
+  to:
+    | ''
+    | '/logowanie'
+    | '/rejestracja'
+    | '/odkrywaj'
+    | '/utworz-post'
+    | '/uzytkownicy'
+    | '/zapisane'
+    | '/'
+    | '/edytuj-post/$postid'
+    | '/edytuj-profil/$profilid'
+    | '/posty/$postid'
+    | '/profile/$profileId'
+    | '/posty'
   id:
     | '__root__'
     | '/_auth'
     | '/_pages'
     | '/_auth/logowanie'
     | '/_auth/rejestracja'
+    | '/_pages/odkrywaj'
+    | '/_pages/utworz-post'
+    | '/_pages/uzytkownicy'
+    | '/_pages/zapisane'
     | '/_pages/'
+    | '/_pages/edytuj-post/$postid'
+    | '/_pages/edytuj-profil/$profilid'
+    | '/_pages/posty/$postid'
+    | '/_pages/profile/$profileId'
+    | '/_pages/posty/'
   fileRoutesById: FileRoutesById
 }
 
@@ -184,7 +381,16 @@ export const routeTree = rootRoute
     "/_pages": {
       "filePath": "_pages.tsx",
       "children": [
-        "/_pages/"
+        "/_pages/odkrywaj",
+        "/_pages/utworz-post",
+        "/_pages/uzytkownicy",
+        "/_pages/zapisane",
+        "/_pages/",
+        "/_pages/edytuj-post/$postid",
+        "/_pages/edytuj-profil/$profilid",
+        "/_pages/posty/$postid",
+        "/_pages/profile/$profileId",
+        "/_pages/posty/"
       ]
     },
     "/_auth/logowanie": {
@@ -195,8 +401,44 @@ export const routeTree = rootRoute
       "filePath": "_auth/rejestracja.tsx",
       "parent": "/_auth"
     },
+    "/_pages/odkrywaj": {
+      "filePath": "_pages/odkrywaj.tsx",
+      "parent": "/_pages"
+    },
+    "/_pages/utworz-post": {
+      "filePath": "_pages/utworz-post.tsx",
+      "parent": "/_pages"
+    },
+    "/_pages/uzytkownicy": {
+      "filePath": "_pages/uzytkownicy.tsx",
+      "parent": "/_pages"
+    },
+    "/_pages/zapisane": {
+      "filePath": "_pages/zapisane.tsx",
+      "parent": "/_pages"
+    },
     "/_pages/": {
       "filePath": "_pages/index.tsx",
+      "parent": "/_pages"
+    },
+    "/_pages/edytuj-post/$postid": {
+      "filePath": "_pages/edytuj-post/$postid.tsx",
+      "parent": "/_pages"
+    },
+    "/_pages/edytuj-profil/$profilid": {
+      "filePath": "_pages/edytuj-profil/$profilid.tsx",
+      "parent": "/_pages"
+    },
+    "/_pages/posty/$postid": {
+      "filePath": "_pages/posty/$postid.tsx",
+      "parent": "/_pages"
+    },
+    "/_pages/profile/$profileId": {
+      "filePath": "_pages/profile/$profileId.tsx",
+      "parent": "/_pages"
+    },
+    "/_pages/posty/": {
+      "filePath": "_pages/posty/index.tsx",
       "parent": "/_pages"
     }
   }

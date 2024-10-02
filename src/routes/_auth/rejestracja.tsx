@@ -19,7 +19,6 @@ import {
 	useCreateUserAccount,
 	useSignInAccount,
 } from "@/lib/react-query/queriesAndMutatations";
-import { getCurrentUser } from "@/lib/appwrite/api";
 const SignupForm = () => {
 	const { toast } = useToast();
 	const { checkAuthUser, isUserLoading } = Route.useLoaderData();
@@ -50,7 +49,6 @@ const SignupForm = () => {
 					title: "Rejestracja nie powiodła się, spróbuj ponownie",
 				});
 			}
-			console.log("New user created:", newUser);
 			const session = await signInAccount({
 				email: values.email,
 				password: values.password,
@@ -64,17 +62,7 @@ const SignupForm = () => {
 
 				return;
 			}
-			console.log("Session created:", session);
-			const user = await getCurrentUser();
-			console.log("Current user:", user);
-
-			const checkAuthWithDelay = async () => {
-				await new Promise((resolve) => setTimeout(resolve, 1000)); // 1 second delay
-				return await checkAuthUser();
-			};
-
-			const isLoggedIn = await checkAuthWithDelay();
-			console.log("Is logged in:", isLoggedIn);
+			const isLoggedIn = await checkAuthUser();
 			if (isLoggedIn) {
 				form.reset();
 				navigate({
@@ -177,7 +165,7 @@ const SignupForm = () => {
 						)}
 					/>
 					<Button type="submit" className="shad-button_primary">
-						{isCreatingUser ? (
+						{isCreatingUser || isUserLoading || isUserLoading ? (
 							<div className="flex-center gap-2">
 								<Loader /> Przesyłanie...
 							</div>

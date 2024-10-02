@@ -16,10 +16,12 @@ import type { z } from "zod";
 import Loader from "@/components/shared/Loader";
 import { useToast } from "@/hooks/use-toast";
 import { useSignInAccount } from "@/lib/react-query/queriesAndMutatations";
+import { useUserContext } from "@/context/AuthContext"; //
+import { getCurrentUser } from "@/lib/appwrite/api";
 const SignInForm = () => {
 	const { toast } = useToast();
 	const { checkAuthUser, isUserLoading } = Route.useLoaderData();
-
+	const { isAuthenticated, setIsAuthenticated, setUser } = useUserContext(); // Add this line
 	const { mutateAsync: signInAccount, isPending: isSigningIn } =
 		useSignInAccount();
 
@@ -42,24 +44,42 @@ const SignInForm = () => {
 			});
 
 			if (!session) {
+				console.log("Session creation failed");
 				toast({
 					title: "Logowanie nie powiodło się, spróbuj ponownie",
 				});
-				navigate({ to: "/logowanie" });
-
 				return;
 			}
 
+			console.log("Session created successfully:", session);
+			const currentUser = await getCurrentUser();
+			console.log(currentUser);
 			const isLoggedIn = await checkAuthUser();
+			console.log("checkAuthUser result:", isLoggedIn);
+			console.log("isAuthenticated state:", isAuthenticated);
+
 			if (isLoggedIn) {
+				setIsAuthenticated(true);
+				// Assuming you have a getCurrentUser function in your API
+
+				console.log("User authenticated successfully");
 				form.reset();
-				navigate({
-					to: "/",
-				});
-			} else {
-				return toast({
-					title: "Logowanie nie powiodło się. Spróbuj ponownie",
-				});
+				navigate({ to: "/" });
+				console.log(session);
+
+				const isLoggedIn = await checkAuthUser();
+				console.log(isLoggedIn);
+
+				if (isLoggedIn) {
+					form.reset();
+					navigate({
+						to: "/",
+					});
+				} else {
+					return toast({
+						title: "Logowanie nie powiodło się. Spróbuj ponownie",
+					});
+				}
 			}
 		} catch (error) {
 			console.log(error);
@@ -117,7 +137,7 @@ const SignInForm = () => {
 						)}
 					/>
 					<Button type="submit" className="shad-button_primary">
-						{isUserLoading ? (
+						{isSigningIn ? (
 							<div className="flex-center gap-2">
 								<Loader /> Przesyłanie...
 							</div>
