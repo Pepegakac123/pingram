@@ -1,4 +1,4 @@
-import { Link, useNavigate, useRouter } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { Button } from "../ui/button";
 import { useSignOutAccount } from "@/lib/react-query/queriesAndMutatations";
 import { useEffect } from "react";
@@ -8,9 +8,6 @@ import type { INavLink } from "@/types";
 const LeftSidebar = () => {
 	const { mutate: signOut, isSuccess } = useSignOutAccount();
 	const { user } = useUserContext();
-	const router = useRouter();
-	const pathname = router.state.location.pathname;
-	console.log(pathname);
 	const navigate = useNavigate();
 	// biome-ignore lint/correctness/useExhaustiveDependencies:
 	useEffect(() => {
@@ -47,23 +44,26 @@ const LeftSidebar = () => {
 				</Link>
 				<ul className="flex flex-col gap-6">
 					{sidebarLinks.map((link: INavLink) => {
-						const isActive = pathname === link.route;
 						return (
-							<li
-								key={link.label}
-								className={`leftsidebar-link ${isActive && "bg-primary-500"}`}
-							>
+							<li key={link.label} className="leftsidebar-link">
 								<Link
 									to={link.route}
 									className="flex gap-4 p-4 items-center capitalize group"
 									activeOptions={{ exact: true }}
+									activeProps={{ className: "bg-primary-500" }}
 								>
-									<img
-										src={link.imgURL}
-										alt={link.label}
-										className={`group-hover:invert-white ${isActive && "invert-white"}`}
-									/>
-									{link.label}
+									{({ isActive }) => {
+										return (
+											<>
+												<img
+													src={link.imgURL}
+													alt={link.label}
+													className={`group-hover:invert-white ${isActive && "invert-white"}`}
+												/>
+												{link.label}
+											</>
+										);
+									}}
 								</Link>
 							</li>
 						);

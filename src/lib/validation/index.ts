@@ -18,3 +18,9 @@ export const SignInValidationSchema = z.object({
 		.string()
 		.min(8, { message: "Hasło musi składać się z minimum 8 znaków." }),
 });
+export const PostValidation = z.object({
+	caption: z.string().min(5).max(2500),
+	file: z.custom<File[]>(),
+	location: z.string().min(2).max(100),
+	tags: z.string(),
+});

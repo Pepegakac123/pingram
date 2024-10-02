@@ -6,7 +6,6 @@ import { useUserContext } from "@/context/AuthContext";
 const Topbar = () => {
 	const { mutate: signOut, isSuccess } = useSignOutAccount();
 	const { user } = useUserContext();
-	console.log(user);
 	const navigate = useNavigate();
 	// biome-ignore lint/correctness/useExhaustiveDependencies:
 	useEffect(() => {
