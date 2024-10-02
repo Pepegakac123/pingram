@@ -3,7 +3,7 @@ import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "./globals.css";
 import { routeTree } from "./routeTree.gen";
-import { useUserContext } from "./context/AuthContext";
+import AuthProvider, { useUserContext } from "./context/AuthContext";
 
 // Create new query client
 const queryClient = new QueryClient();
@@ -13,7 +13,6 @@ const router = createRouter({
 	routeTree,
 	context: {
 		queryClient,
-		// provide the actual userContext later
 		userContext: undefined!,
 	},
 	defaultPreload: "intent",
@@ -27,7 +26,15 @@ declare module "@tanstack/react-router" {
 }
 
 // Create a wrapper component to use the context
-function App() {
+function AppWithProvider() {
+	return (
+		<AuthProvider>
+			<AppWithRouter />
+		</AuthProvider>
+	);
+}
+
+function AppWithRouter() {
 	const userContext = useUserContext();
 
 	return (
@@ -41,7 +48,7 @@ if (rootElement && !rootElement.innerHTML) {
 	const root = ReactDOM.createRoot(rootElement);
 	root.render(
 		<QueryClientProvider client={queryClient}>
-			<App />
+			<AppWithProvider />
 		</QueryClientProvider>,
 	);
 }

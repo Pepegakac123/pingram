@@ -38,10 +38,10 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 					bio: currentAccount.bio,
 				});
 				setIsAuthenticated(true);
-
 				return true;
 			}
-
+			setUser(INITIAL_USER);
+			setIsAuthenticated(false);
 			return false;
 		} catch (error) {
 			console.error(error);
@@ -50,6 +50,10 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 			setIsLoading(false);
 		}
 	};
+	// biome-ignore lint/correctness/useExhaustiveDependencies:
+	useEffect(() => {
+		checkAuthUser();
+	}, []);
 
 	const value = {
 		user,

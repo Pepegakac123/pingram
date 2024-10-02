@@ -50,6 +50,7 @@ const SignupForm = () => {
 					title: "Rejestracja nie powiodła się, spróbuj ponownie",
 				});
 			}
+			console.log("New user created:", newUser);
 			const session = await signInAccount({
 				email: values.email,
 				password: values.password,
@@ -63,11 +64,17 @@ const SignupForm = () => {
 
 				return;
 			}
+			console.log("Session created:", session);
 			const user = await getCurrentUser();
-			console.log(user);
+			console.log("Current user:", user);
 
-			const isLoggedIn = await checkAuthUser();
-			console.log(session, isLoggedIn);
+			const checkAuthWithDelay = async () => {
+				await new Promise((resolve) => setTimeout(resolve, 1000)); // 1 second delay
+				return await checkAuthUser();
+			};
+
+			const isLoggedIn = await checkAuthWithDelay();
+			console.log("Is logged in:", isLoggedIn);
 			if (isLoggedIn) {
 				form.reset();
 				navigate({
