@@ -1,6 +1,8 @@
 import Loader from "@/components/shared/Loader";
+import PostCard from "@/components/shared/PostCard";
 import { useGetRecentPosts } from "@/lib/react-query/queriesAndMutatations";
 import { createFileRoute } from "@tanstack/react-router";
+import type { Models } from "appwrite";
 
 const Home = () => {
 	const {
@@ -8,7 +10,6 @@ const Home = () => {
 		isPending: isPostLoading,
 		isError: isErrorPosts,
 	} = useGetRecentPosts();
-	console.log(posts);
 	return (
 		<div className="flex flex-1">
 			<div className="home-container">
@@ -17,7 +18,11 @@ const Home = () => {
 					{isPostLoading && !posts && typeof posts === "undefined" ? (
 						<Loader />
 					) : (
-						<ul>{posts?.total < 1 && <p>No posts yet</p>}</ul>
+						<ul className="flex flex-ocl flex-1 gap-9 w-full">
+							{posts?.documents.map((post: Models.Document) => (
+								<PostCard key={post.$id} post={post} />
+							))}
+						</ul>
 					)}
 				</div>
 			</div>

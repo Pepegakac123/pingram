@@ -1,5 +1,14 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute('/_pages/edytuj-post/$postid')({
-  component: () => <div>Hello /_pages/edytuj-post/$postid!</div>,
-})
+const EditPost = () => {
+	const { postid } = Route.useLoaderData();
+	console.log(postid);
+	return <div>Edytuj post</div>;
+};
+
+export const Route = createFileRoute("/_pages/edytuj-post/$postid")({
+	component: EditPost,
+	loader: ({ params: { postid } }) => {
+		return { postid };
+	},
+});
