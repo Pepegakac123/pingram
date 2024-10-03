@@ -5,11 +5,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import type { Models } from "appwrite";
 
 const Home = () => {
-	const {
-		data: posts,
-		isPending: isPostLoading,
-		isError: isErrorPosts,
-	} = useGetRecentPosts();
+	const { data: posts, isPending: isPostLoading } = useGetRecentPosts();
 	return (
 		<div className="flex flex-1">
 			<div className="home-container">
@@ -18,7 +14,7 @@ const Home = () => {
 					{isPostLoading && !posts && typeof posts === "undefined" ? (
 						<Loader />
 					) : (
-						<ul className="flex flex-ocl flex-1 gap-9 w-full">
+						<ul className="flex flex-col flex-1 gap-9 w-full">
 							{posts?.documents.map((post: Models.Document) => (
 								<PostCard key={post.$id} post={post} />
 							))}

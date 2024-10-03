@@ -1,5 +1,5 @@
 import { bottombarLinks } from "@/constants";
-import { Link, useNavigate, useRouter } from "@tanstack/react-router";
+import { Link, useRouter } from "@tanstack/react-router";
 
 const BottomBar = () => {
 	const router = useRouter();
@@ -11,18 +11,25 @@ const BottomBar = () => {
 				return (
 					<Link
 						to={link.route}
-						className={`${isActive && "bg-primary-500 rounded-sm"} flex-center flex-col gap-1 transition`}
+						className={`${isActive && "rounded-[10px] bg-primary-500"} flex-center flex-col gap-1 p-2 transition`}
 						activeOptions={{ exact: true }}
+						activeProps={{ className: "bg-primary-500" }}
 						key={link.label}
 					>
-						<img
-							src={link.imgURL}
-							alt={link.label}
-							className={`${isActive && "invert-white"}`}
-							width={16}
-							height={16}
-						/>
-						<p className="tiny-medium text-light-2">{link.label}</p>
+						{({ isActive }) => {
+							return (
+								<>
+									<img
+										src={link.imgURL}
+										alt={link.label}
+										className={`${isActive && "invert-white"}`}
+										width={16}
+										height={16}
+									/>
+									<p className="tiny-medium text-light-2">{link.label}</p>
+								</>
+							);
+						}}
 					</Link>
 				);
 			})}

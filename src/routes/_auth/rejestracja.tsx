@@ -25,8 +25,7 @@ const SignupForm = () => {
 	const { mutateAsync: createUserAccount, isPending: isCreatingUser } =
 		useCreateUserAccount();
 
-	const { mutateAsync: signInAccount, isPending: isSigningIn } =
-		useSignInAccount();
+	const { mutateAsync: signInAccount } = useSignInAccount();
 
 	const navigate = useNavigate();
 

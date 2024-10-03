@@ -1,6 +1,6 @@
 import type { Models } from "appwrite";
 import { Link } from "@tanstack/react-router";
-import { formatDateString, multiFormatDateString } from "@/utils";
+import { multiFormatDateString } from "@/utils";
 import { useUserContext } from "@/context/AuthContext";
 import PostStats from "./PostStats";
 type PostCardProps = {

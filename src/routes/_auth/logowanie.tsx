@@ -20,8 +20,8 @@ import { useUserContext } from "@/context/AuthContext"; //
 import { getCurrentUser } from "@/lib/appwrite/api";
 const SignInForm = () => {
 	const { toast } = useToast();
-	const { checkAuthUser, isUserLoading } = Route.useLoaderData();
-	const { isAuthenticated, setIsAuthenticated, setUser } = useUserContext(); // Add this line
+	const { checkAuthUser } = Route.useLoaderData();
+	const { isAuthenticated, setIsAuthenticated } = useUserContext(); // Add this line
 	const { mutateAsync: signInAccount, isPending: isSigningIn } =
 		useSignInAccount();
 
@@ -60,16 +60,10 @@ const SignInForm = () => {
 
 			if (isLoggedIn) {
 				setIsAuthenticated(true);
-				// Assuming you have a getCurrentUser function in your API
-
-				console.log("User authenticated successfully");
 				form.reset();
 				navigate({ to: "/" });
-				console.log(session);
 
 				const isLoggedIn = await checkAuthUser();
-				console.log(isLoggedIn);
-
 				if (isLoggedIn) {
 					form.reset();
 					navigate({

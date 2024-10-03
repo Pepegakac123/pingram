@@ -365,11 +365,21 @@ export async function searchPosts(searchTerm: string) {
 		console.log(error);
 	}
 }
-export async function getInfinitePosts({ pageParam }: { pageParam: number }) {
+export async function getInfinitePosts({
+	pageParam,
+}: { pageParam: number | null }) {
 	const queries: any[] = [Query.orderDesc("$updatedAt"), Query.limit(10)];
 
-	if (pageParam) {
-		queries.push(Query.cursorAfter(pageParam.toString()));
+	if (pageParam && pageParam > 1) {
+		// Pobierz ID ostatniego dokumentu z poprzedniej strony
+		const previousPagePosts = await databases.listDocuments(
+			appwriteConfig.databaseId,
+			appwriteConfig.postsCollectionId,
+			[Query.orderDesc("$updatedAt"), Query.limit((pageParam - 1) * 10)],
+		);
+		const lastId =
+			previousPagePosts.documents[previousPagePosts.documents.length - 1].$id;
+		queries.push(Query.cursorAfter(lastId));
 	}
 
 	try {
@@ -378,9 +388,11 @@ export async function getInfinitePosts({ pageParam }: { pageParam: number }) {
 			appwriteConfig.postsCollectionId,
 			queries,
 		);
+
 		if (!posts) throw Error;
 		return posts;
 	} catch (error) {
 		console.log(error);
+		throw error; // Rzucamy błąd, aby React Query mógł go obsłużyć
 	}
 }

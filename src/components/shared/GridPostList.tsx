@@ -3,7 +3,7 @@ import type { Models } from "appwrite";
 import { Link } from "@tanstack/react-router";
 import PostStats from "./PostStats";
 type GridPostListProps = {
-	posts: Models.Document[];
+	posts?: Models.Document[];
 	showUser?: boolean;
 	showStats?: boolean;
 };
@@ -17,7 +17,7 @@ const GridPostList = ({
 	console.log(posts);
 	return (
 		<ul className="grid-container">
-			{posts.map((post) => (
+			{posts?.map((post) => (
 				<li key={post.$id} className="relative min-w-80 h-80">
 					<Link
 						to="/posty/$postid"
