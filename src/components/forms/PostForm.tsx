@@ -19,14 +19,21 @@ import type { Models } from "appwrite";
 import { useUserContext } from "@/context/AuthContext";
 import { toast } from "@/hooks/use-toast";
 import { useNavigate } from "@tanstack/react-router";
-import { useCreatePost } from "@/lib/react-query/queriesAndMutatations";
+import {
+	useCreatePost,
+	useUpdatePost,
+} from "@/lib/react-query/queriesAndMutatations";
 type PostFormProps = {
 	post?: Models.Document;
+	action: "Utwórz" | "Edytuj";
 };
-const PostForm = ({ post }: PostFormProps) => {
+const PostForm = ({ post, action }: PostFormProps) => {
 	const navigate = useNavigate();
 	const { mutateAsync: createPost, isPending: isLoadingCreate } =
 		useCreatePost();
+	const { mutateAsync: updatePost, isPending: isLoadingUpdate } =
+		useUpdatePost();
+
 	const { user } = useUserContext();
 	const form = useForm<z.infer<typeof PostValidation>>({
 		resolver: zodResolver(PostValidation),
@@ -40,6 +47,24 @@ const PostForm = ({ post }: PostFormProps) => {
 
 	// 2. Define a submit handler.
 	async function onSubmit(values: z.infer<typeof PostValidation>) {
+		if (post && action === "Edytuj") {
+			const updatedPost = await updatePost({
+				...values,
+				postId: post.$id,
+				imageId: post?.imageId,
+				imageUrl: post?.imageUrl,
+			});
+
+			if (!updatedPost) {
+				toast({ title: "Proszę Spróbować Ponownie" });
+			}
+
+			return navigate({
+				to: "/posty/$postid",
+				params: { postid: post.$id },
+			});
+		}
+
 		const newPost = await createPost({
 			...values,
 			userId: user.id,
@@ -129,8 +154,10 @@ const PostForm = ({ post }: PostFormProps) => {
 					<Button
 						type="submit"
 						className="shad-button_primary whitespace-nowrap"
+						disabled={isLoadingCreate || isLoadingUpdate}
 					>
-						Prześlij
+						{isLoadingCreate || (isLoadingUpdate && "Ładowanie...")}
+						{action} Post
 					</Button>
 				</div>
 			</form>
